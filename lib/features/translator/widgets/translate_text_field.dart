@@ -14,6 +14,7 @@ class TranslateTextField extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return TextField(
+      readOnly: isReadOnly,
       maxLines: 5,
       controller: controller,
       decoration: InputDecoration(

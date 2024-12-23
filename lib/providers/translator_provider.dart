@@ -4,16 +4,36 @@ import 'package:translator_app/features/translator/services/translator_service.d
 class TranslatorProvider with ChangeNotifier {
   final TranslatorService _service = TranslatorService();
 
-  String _sourceLanguage = 'Germany';
-  String _targetLanguage = 'Slovenjia';
-
-  List<String> _languages = ['Germany', 'Slovenjia', 'France', 'Italy'];
-  List<String> get languages => _languages;
+  String _sourceLanguage = 'Abkhaz';
+  String _targetLanguage = 'Acehnese';
+  String _targetCode = 'ar';
+  String get targetCode => _targetCode;
+  List<Map<String, dynamic>> _languages = [];
+  List<Map<String, dynamic>> get languages => _languages;
   String get sourceLanguage => _sourceLanguage;
   String get targetLanguage => _targetLanguage;
+  String _translatedText = '';
+  String get translatedText => _translatedText;
+
+  Future<void> translateText(String inputText) async {
+    try {
+      _translatedText = await _service.translateText(
+        inputText,
+        targetCode,
+      );
+      notifyListeners();
+    } catch (e) {
+      throw Exception("Failed to translate text");
+    }
+  }
 
   void setSourceLanguage(String language) {
     _sourceLanguage = language;
+    notifyListeners();
+  }
+
+  void setTargetCode(String code) {
+    _targetCode = code;
     notifyListeners();
   }
 
@@ -29,45 +49,24 @@ class TranslatorProvider with ChangeNotifier {
       setTargetLanguage(language);
     }
   }
-  // TranslatorProvider() {
-  //   _initialize();
-  // }
 
-  // void _initialize() async {
-  //   await fetchLanguages();
-  // }
+  TranslatorProvider() {
+    _initialize();
+  }
 
-  // Future<void> fetchLanguages() async {
-  //   try {
-  //     languages = await _service.fetchLanguages();
-  //     print('fetching.....');
-  //     notifyListeners();
-  //   } catch (e) {
-  //     throw Exception("Failed to load languages");
-  //   }
-  // }
+  void _initialize() async {
+    await fetchLanguages();
+  }
 
-  // void setSourceLanguageCode(String language) {
-  //   sourceLanguageCode = language;
-  //   notifyListeners();
-  // }
+  Future<void> fetchLanguages() async {
+    try {
+      _languages =
+          List<Map<String, dynamic>>.from(await _service.fetchLanguages());
+      print('fetching.....');
 
-  // void setTargetLanguageCode(String language) {
-  //   targetLanguageCode = language;
-  //   notifyListeners();
-  // }
-
-  // void setInputText(String text) {
-  //   inputText = text;
-  //   notifyListeners();
-  // }
-
-  // Future<void> translate() async {
-  //   try {
-  //     translatedText = await _service.translateText(inputText, targetLanguage);
-  //     notifyListeners();
-  //   } catch (e) {
-  //     throw Exception("Failed to translate text");
-  //   }
-  // }
+      notifyListeners();
+    } catch (e) {
+      throw Exception("Failed to load languages");
+    }
+  }
 }

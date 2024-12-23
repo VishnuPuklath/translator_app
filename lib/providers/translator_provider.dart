@@ -62,7 +62,6 @@ class TranslatorProvider with ChangeNotifier {
     try {
       _languages =
           List<Map<String, dynamic>>.from(await _service.fetchLanguages());
-      print('fetching.....');
 
       notifyListeners();
     } catch (e) {

@@ -127,6 +127,15 @@ void _showLanguageSelectionSheet(
   TranslatorProvider translatorProvider, {
   required bool isSource,
 }) {
+  TextEditingController searchController = TextEditingController();
+
+  List<Map<String, dynamic>> getFilteredLanguages(String query) {
+    return translatorProvider.languages
+        .where((language) =>
+            language['name'].toLowerCase().contains(query.toLowerCase()))
+        .toList();
+  }
+
   showModalBottomSheet(
     context: context,
     builder: (_) {
@@ -136,31 +145,45 @@ void _showLanguageSelectionSheet(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             const Text('All Languages'),
+            const SizedBox(height: 10),
+            TextField(
+              controller: searchController,
+              onChanged: (value) {
+                (context as Element).markNeedsBuild();
+              },
+              decoration: InputDecoration(
+                labelText: 'Search',
+                prefixIcon: Icon(Icons.search),
+                border: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(8),
+                ),
+              ),
+            ),
             const SizedBox(height: 20),
             Expanded(
               child: ListView.builder(
-                itemCount: translatorProvider.languages.length,
+                itemCount: getFilteredLanguages(searchController.text).length,
                 itemBuilder: (context, index) {
-                  final language = translatorProvider.languages[index];
+                  final language =
+                      getFilteredLanguages(searchController.text)[index];
                   return Padding(
                     padding: const EdgeInsets.all(8.0),
                     child: Container(
                       decoration: BoxDecoration(
-                          color: isSource
-                              ? translatorProvider.sourceLanguage ==
-                                      language['name']
-                                  ? Colors.deepOrange[300]
-                                  : Colors.black
-                              : translatorProvider.targetLanguage ==
-                                      language['name']
-                                  ? Colors.deepOrange[300]
-                                  : Colors.black,
-                          borderRadius: BorderRadius.circular(8)),
+                        color: isSource
+                            ? translatorProvider.sourceLanguage ==
+                                    language['name']
+                                ? Colors.deepOrange[300]
+                                : Colors.black
+                            : translatorProvider.targetLanguage ==
+                                    language['name']
+                                ? Colors.deepOrange[300]
+                                : Colors.black,
+                        borderRadius: BorderRadius.circular(8),
+                      ),
                       child: ListTile(
                         title: Text(language['name']),
                         onTap: () {
-                          print(language['name']);
-                          print(language['language']);
                           translatorProvider.selectLanguage(
                               isSource, language['name']);
                           if (!isSource) {

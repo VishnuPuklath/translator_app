@@ -32,9 +32,6 @@ class TranslatorService {
   }
 
   Future<String> translateText(String text, String targetLanguage) async {
-    print(text);
-    print(targetLanguage);
-
     final url = Uri.parse(
         'https://google-translate1.p.rapidapi.com/language/translate/v2');
 
@@ -60,7 +57,6 @@ class TranslatorService {
         body: encodedBody,
       );
 
-      print(response.body);
       if (response.statusCode == 200) {
         final data = jsonDecode(response.body);
         return data['data']['translations'][0]['translatedText'];
